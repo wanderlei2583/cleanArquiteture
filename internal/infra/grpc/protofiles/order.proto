@@ -18,3 +18,20 @@ message CreateOrderResponse {
 service OrderService {
   rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
 }
+
+message Order {
+    string id = 1;
+    double price = 2;
+    double tax = 3;
+    double final_price = 4;
+}
+
+message ListOrdersRequest {}
+
+message ListOrdersResponse {
+    repeated Order orders = 1;
+}
+
+service OrderService {
+    rpc ListOrders(ListOrdersRequest) returns (ListOrdersResponse) {}
+}
