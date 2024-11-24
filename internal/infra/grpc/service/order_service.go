@@ -12,13 +12,18 @@ type OrderService struct {
 	CreateOrderUseCase usecase.CreateOrderUseCase
 }
 
-func NewOrderService(createOrderUseCase usecase.CreateOrderUseCase) *OrderService {
+func NewOrderService(
+	createOrderUseCase usecase.CreateOrderUseCase,
+) *OrderService {
 	return &OrderService{
 		CreateOrderUseCase: createOrderUseCase,
 	}
 }
 
-func (s *OrderService) CreateOrder(ctx context.Context, in *pb.CreateOrderRequest) (*pb.CreateOrderResponse, error) {
+func (s *OrderService) CreateOrder(
+	ctx context.Context,
+	in *pb.CreateOrderRequest,
+) (*pb.CreateOrderResponse, error) {
 	dto := usecase.OrderInputDTO{
 		ID:    in.Id,
 		Price: float64(in.Price),
@@ -33,5 +38,29 @@ func (s *OrderService) CreateOrder(ctx context.Context, in *pb.CreateOrderReques
 		Price:      float32(output.Price),
 		Tax:        float32(output.Tax),
 		FinalPrice: float32(output.FinalPrice),
+	}, nil
+}
+
+func (s *OrderService) ListOrders(
+	ctx context.Context,
+	in *pb.ListOrdersRequest,
+) (*pb.ListOrdersResponse, error) {
+	output, err := s.ListOrdersUseCase.Execute()
+	if err != nil {
+		return nil, err
+	}
+
+	var orders []*pb.Order
+	for _, order := range output {
+		orders = append(orders, &pb.Order{
+			Id:         order.ID,
+			Price:      order.Price,
+			Tax:        order.Tax,
+			FinalPrice: order.FinalPrice,
+		})
+	}
+
+	return &pb.ListOrdersResponse{
+		Orders: orders,
 	}, nil
 }
