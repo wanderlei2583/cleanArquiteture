@@ -13,7 +13,12 @@ import (
 
 type Resolver struct {
 	CreateOrderUseCase usecase.CreateOrderUseCase
+	ListOrdersUseCase  usecase.ListOrdersUseCase
 }
+
+type queryResolver struct{ *Resolver }
+
+func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 func (r *queryResolver) ListOrders(
 	ctx context.Context,
