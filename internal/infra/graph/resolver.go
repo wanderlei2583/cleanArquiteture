@@ -1,6 +1,11 @@
 package graph
 
-import "github.com/devfullcycle/20-CleanArch/internal/usecase"
+import (
+	"context"
+
+	"github.com/devfullcycle/20-CleanArch/internal/infra/graph/model"
+	"github.com/devfullcycle/20-CleanArch/internal/usecase"
+)
 
 // This file will not be regenerated automatically.
 //
@@ -8,4 +13,25 @@ import "github.com/devfullcycle/20-CleanArch/internal/usecase"
 
 type Resolver struct {
 	CreateOrderUseCase usecase.CreateOrderUseCase
+}
+
+func (r *queryResolver) ListOrders(
+	ctx context.Context,
+) ([]*model.Order, error) {
+	output, err := r.ListOrdersUseCase.Execute()
+	if err != nil {
+		return nil, err
+	}
+
+	var orders []*model.Order
+	for _, order := range output {
+		orders = append(orders, &model.Order{
+			ID:         order.ID,
+			Price:      order.Price,
+			Tax:        order.Tax,
+			FinalPrice: order.FinalPrice,
+		})
+	}
+
+	return orders, nil
 }
