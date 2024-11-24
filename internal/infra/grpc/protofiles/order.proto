@@ -15,9 +15,6 @@ message CreateOrderResponse {
   float final_price = 4;
 }
 
-service OrderService {
-  rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
-}
 
 message Order {
     string id = 1;
@@ -33,5 +30,6 @@ message ListOrdersResponse {
 }
 
 service OrderService {
-    rpc ListOrders(ListOrdersRequest) returns (ListOrdersResponse) {}
+  rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse) {}
+  rpc ListOrders(ListOrdersRequest) returns (ListOrdersResponse) {}
 }
