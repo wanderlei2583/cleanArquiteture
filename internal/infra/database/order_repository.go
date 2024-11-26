@@ -44,14 +44,19 @@ func (r *OrderRepository) List() ([]entity.Order, error) {
 	}
 	defer rows.Close()
 
-	var orders []entity.Order
+	items := []entity.Order{}
 	for rows.Next() {
-		var order entity.Order
-		err := rows.Scan(&order.ID, &order.Price, &order.Tax, &order.FinalPrice)
-		if err != nil {
+		var i entity.Order
+		if err := rows.Scan(&i.ID, &i.Price, &i.Tax, &i.FinalPrice); err != nil {
 			return nil, err
 		}
-		orders = append(orders, order)
+		items = append(items, i)
 	}
-	return orders, nil
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
