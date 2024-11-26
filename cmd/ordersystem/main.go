@@ -8,6 +8,11 @@ import (
 
 	graphql_handler "github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/streadway/amqp"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+
 	"github.com/devfullcycle/20-CleanArch/configs"
 	"github.com/devfullcycle/20-CleanArch/internal/event/handler"
 	"github.com/devfullcycle/20-CleanArch/internal/infra/graph"
@@ -15,12 +20,6 @@ import (
 	"github.com/devfullcycle/20-CleanArch/internal/infra/grpc/service"
 	"github.com/devfullcycle/20-CleanArch/internal/infra/web/webserver"
 	"github.com/devfullcycle/20-CleanArch/pkg/events"
-	"github.com/streadway/amqp"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
-
-	// mysql
-	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
@@ -29,29 +28,43 @@ func main() {
 		panic(err)
 	}
 
-	db, err := sql.Open(configs.DBDriver, fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", configs.DBUser, configs.DBPassword, configs.DBHost, configs.DBPort, configs.DBName))
+	db, err := sql.Open(
+		configs.DBDriver,
+		fmt.Sprintf(
+			"%s:%s@tcp(%s:%s)/%s",
+			configs.DBUser,
+			configs.DBPassword,
+			configs.DBHost,
+			configs.DBPort,
+			configs.DBName,
+		),
+	)
 	if err != nil {
 		panic(err)
 	}
 	defer db.Close()
 
 	rabbitMQChannel := getRabbitMQChannel()
-
 	eventDispatcher := events.NewEventDispatcher()
 	eventDispatcher.Register("OrderCreated", &handler.OrderCreatedHandler{
 		RabbitMQChannel: rabbitMQChannel,
 	})
 
 	createOrderUseCase := NewCreateOrderUseCase(db, eventDispatcher)
+	listOrdersUseCase := NewListOrdersUseCase(db, eventDispatcher)
 
 	webserver := webserver.NewWebServer(configs.WebServerPort)
 	webOrderHandler := NewWebOrderHandler(db, eventDispatcher)
 	webserver.AddHandler("/order", webOrderHandler.Create)
+	webserver.AddHandler("/orders", webOrderHandler.List)
 	fmt.Println("Starting web server on port", configs.WebServerPort)
 	go webserver.Start()
 
 	grpcServer := grpc.NewServer()
-	createOrderService := service.NewOrderService(*createOrderUseCase)
+	createOrderService := service.NewOrderService(
+		*createOrderUseCase,
+		*listOrdersUseCase,
+	)
 	pb.RegisterOrderServiceServer(grpcServer, createOrderService)
 	reflection.Register(grpcServer)
 
@@ -62,9 +75,12 @@ func main() {
 	}
 	go grpcServer.Serve(lis)
 
-	srv := graphql_handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
-		CreateOrderUseCase: *createOrderUseCase,
-	}}))
+	srv := graphql_handler.NewDefaultServer(
+		graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
+			CreateOrderUseCase: *createOrderUseCase,
+			ListOrdersUseCase:  *listOrdersUseCase,
+		}}),
+	)
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
 
