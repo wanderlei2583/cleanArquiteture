@@ -51,17 +51,6 @@ func NewCreateOrderUseCase(
 	return &usecase.CreateOrderUseCase{}
 }
 
-func NewListOrdersUseCase(
-	db *sql.DB,
-	eventDispatcher events.EventDispatcherInterface,
-) *usecase.ListOrdersUseCase {
-	wire.Build(
-		setOrderRepositoryDependency,
-		usecase.NewListOrdersUseCase,
-	)
-	return &usecase.ListOrdersUseCase{}
-}
-
 func NewWebOrderHandler(
 	db *sql.DB,
 	eventDispatcher events.EventDispatcherInterface,
@@ -72,4 +61,16 @@ func NewWebOrderHandler(
 		web.NewWebOrderHandler,
 	)
 	return &web.WebOrderHandler{}
+}
+
+func NewListOrdersUseCase(
+	db *sql.DB,
+	eventDispatcher events.EventDispatcherInterface,
+) *usecase.ListOrdersUseCase {
+	wire.Build(
+		setOrderRepositoryDependency,
+		setOrderCreatedEvent,
+		usecase.NewListOrdersUseCase,
+	)
+	return &usecase.ListOrdersUseCase{}
 }
