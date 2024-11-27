@@ -8,12 +8,12 @@ import (
 
 	"github.com/google/wire"
 
-	"github.com/devfullcycle/20-CleanArch/internal/entity"
-	"github.com/devfullcycle/20-CleanArch/internal/event"
-	"github.com/devfullcycle/20-CleanArch/internal/infra/database"
-	"github.com/devfullcycle/20-CleanArch/internal/infra/web"
-	"github.com/devfullcycle/20-CleanArch/internal/usecase"
-	"github.com/devfullcycle/20-CleanArch/pkg/events"
+	"github.com/wanderlei2583/clean_arquitecture/internal/entity"
+	"github.com/wanderlei2583/clean_arquitecture/internal/event"
+	"github.com/wanderlei2583/clean_arquitecture/internal/infra/database"
+	"github.com/wanderlei2583/clean_arquitecture/internal/infra/web"
+	"github.com/wanderlei2583/clean_arquitecture/internal/usecase"
+	"github.com/wanderlei2583/clean_arquitecture/pkg/events"
 )
 
 var setOrderRepositoryDependency = wire.NewSet(
