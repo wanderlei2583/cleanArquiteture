@@ -1,6 +1,9 @@
 package usecase
 
-import "github.com/devfullcycle/20-CleanArch/internal/entity"
+import (
+	"github.com/wanderlei2583/clean_arquitecture/internal/entity"
+	"github.com/wanderlei2583/clean_arquitecture/pkg/events"
+)
 
 type OrderListOutputDTO struct {
 	ID         string
@@ -11,13 +14,19 @@ type OrderListOutputDTO struct {
 
 type ListOrdersUseCase struct {
 	OrderRepository entity.OrderRepositoryInterface
+	OrderCreated    events.EventInterface
+	EventDispatcher events.EventDispatcherInterface
 }
 
-func NewListOrderUseCase(
+func NewListOrdersUseCase(
 	OrderRepository entity.OrderRepositoryInterface,
+	OrderCreated events.EventInterface,
+	EventDispatcher events.EventDispatcherInterface,
 ) *ListOrdersUseCase {
 	return &ListOrdersUseCase{
 		OrderRepository: OrderRepository,
+		OrderCreated:    OrderCreated,
+		EventDispatcher: EventDispatcher,
 	}
 }
 
