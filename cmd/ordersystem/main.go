@@ -13,13 +13,13 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	"github.com/devfullcycle/20-CleanArch/configs"
-	"github.com/devfullcycle/20-CleanArch/internal/event/handler"
-	"github.com/devfullcycle/20-CleanArch/internal/infra/graph"
-	"github.com/devfullcycle/20-CleanArch/internal/infra/grpc/pb"
-	"github.com/devfullcycle/20-CleanArch/internal/infra/grpc/service"
-	"github.com/devfullcycle/20-CleanArch/internal/infra/web/webserver"
-	"github.com/devfullcycle/20-CleanArch/pkg/events"
+	"github.com/wanderlei2583/clean_arquitecture/configs"
+	"github.com/wanderlei2583/clean_arquitecture/internal/event/handler"
+	"github.com/wanderlei2583/clean_arquitecture/internal/infra/graph"
+	"github.com/wanderlei2583/clean_arquitecture/internal/infra/grpc/pb"
+	"github.com/wanderlei2583/clean_arquitecture/internal/infra/grpc/service"
+	"github.com/wanderlei2583/clean_arquitecture/internal/infra/web/webserver"
+	"github.com/wanderlei2583/clean_arquitecture/pkg/events"
 )
 
 func main() {
