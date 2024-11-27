@@ -1,7 +1,7 @@
 package graph
 
 import (
-	"github.com/devfullcycle/20-CleanArch/internal/usecase"
+	"github.com/wanderlei2583/clean_arquitecture/internal/usecase"
 )
 
 // This file will not be regenerated automatically.
