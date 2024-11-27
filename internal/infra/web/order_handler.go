@@ -4,29 +4,26 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/devfullcycle/20-CleanArch/internal/entity"
-	"github.com/devfullcycle/20-CleanArch/internal/usecase"
-	"github.com/devfullcycle/20-CleanArch/pkg/events"
+	"github.com/wanderlei2583/clean_arquitecture/internal/entity"
+	"github.com/wanderlei2583/clean_arquitecture/internal/usecase"
+	"github.com/wanderlei2583/clean_arquitecture/pkg/events"
 )
 
 type WebOrderHandler struct {
 	EventDispatcher   events.EventDispatcherInterface
 	OrderRepository   entity.OrderRepositoryInterface
 	OrderCreatedEvent events.EventInterface
-	ListOrdersUseCase usecase.ListOrdersUseCase
 }
 
 func NewWebOrderHandler(
 	EventDispatcher events.EventDispatcherInterface,
 	OrderRepository entity.OrderRepositoryInterface,
 	OrderCreatedEvent events.EventInterface,
-	listOrdersUseCase usecase.ListOrdersUseCase,
 ) *WebOrderHandler {
 	return &WebOrderHandler{
 		EventDispatcher:   EventDispatcher,
 		OrderRepository:   OrderRepository,
 		OrderCreatedEvent: OrderCreatedEvent,
-		ListOrdersUseCase: listOrdersUseCase,
 	}
 }
 
@@ -56,18 +53,20 @@ func (h *WebOrderHandler) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *WebOrderHandler) List(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
+	listOrdes := usecase.NewListOrdersUseCase(
+		h.OrderRepository,
+		h.OrderCreatedEvent,
+		h.EventDispatcher,
+	)
 
-	output, err := h.ListOrdersUseCase.Execute()
+	output, err := listOrdes.Execute()
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(output)
+	err = json.NewEncoder(w).Encode(output)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
