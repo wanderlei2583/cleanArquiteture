@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"os"
 
 	graphql_handler "github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -89,7 +90,12 @@ func main() {
 }
 
 func getRabbitMQChannel() *amqp.Channel {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	rabbitmqURL := os.Getenv("RABBITMQ_URL")
+	if rabbitmqURL == "" {
+		rabbitmqURL = "amqp://guest:guest@localhost:5672/"
+	}
+
+	conn, err := amqp.Dial(rabbitmqURL)
 	if err != nil {
 		panic(err)
 	}
