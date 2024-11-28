@@ -55,24 +55,15 @@ GRPC_SERVER_PORT=50051
 GRAPHQL_SERVER_PORT=8080
 ```
 
-### 3. Inicie os serviços de infraestrutura
+### 3. Inicie os serviços de infraestrutura e os servidores REST, gRPC e GraphQL
 
 ```bash
-docker-compose up -d
+docker-compose up
 ```
 
 ### 4. Execute as migrações do banco de dados
 
 As migrações são executadas automaticamente ao iniciar o container MySQL.
-
-### 5. Compile e execute o projeto
-
-```bash
-go mod tidy
-cd cmd/ordersystem
-go run main.go wire_gen.go
-```
-![Servidor iniciado](img/img01.jpg)
 
 ## 📡 Endpoints e Serviços
 
