@@ -6,19 +6,50 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/wanderlei2583/clean_arquitecture/internal/infra/graph/model"
+	"github.com/wanderlei2583/clean_arquitecture/internal/usecase"
 )
 
 // CreateOrder is the resolver for the createOrder field.
 func (r *mutationResolver) CreateOrder(ctx context.Context, input *model.OrderInput) (*model.Order, error) {
-	panic(fmt.Errorf("not implemented: CreateOrder - createOrder"))
+	dto := usecase.OrderInputDTO{
+		ID:    input.ID,
+		Price: input.Price,
+		Tax:   input.Tax,
+	}
+
+	output, err := r.CreateOrderUseCase.Execute(dto)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.Order{
+		ID:         output.ID,
+		Price:      output.Price,
+		Tax:        output.Tax,
+		FinalPrice: output.FinalPrice,
+	}, nil
 }
 
 // ListOrders is the resolver for the listOrders field.
 func (r *queryResolver) ListOrders(ctx context.Context) ([]*model.Order, error) {
-	panic(fmt.Errorf("not implemented: ListOrders - listOrders"))
+	output, err := r.ListOrdersUseCase.Execute()
+	if err != nil {
+		return nil, err
+	}
+
+	var orders []*model.Order
+	for _, order := range output {
+		orders = append(orders, &model.Order{
+			ID:         order.ID,
+			Price:      order.Price,
+			Tax:        order.Tax,
+			FinalPrice: order.FinalPrice,
+		})
+	}
+
+	return orders, nil
 }
 
 // Mutation returns MutationResolver implementation.
