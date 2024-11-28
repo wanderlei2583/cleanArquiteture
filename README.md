@@ -69,7 +69,8 @@ As migrações são executadas automaticamente ao iniciar o container MySQL.
 
 ```bash
 go mod tidy
-go run cmd/ordersystem/main.go cmd/ordersystem/wire_gen.go
+cd cmd/ordersystem
+go run main.go wire_gen.go
 ```
 ![Servidor iniciado](img/img01.jpg)
 
